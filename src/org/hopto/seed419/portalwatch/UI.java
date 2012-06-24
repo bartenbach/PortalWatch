@@ -4,8 +4,8 @@
  */
 package org.hopto.seed419.portalwatch;
 
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
+import java.awt.*;
+import java.awt.event.*;
 import java.net.URL;
 import java.util.List;
 import javax.swing.UIManager;
@@ -18,7 +18,94 @@ public class UI extends javax.swing.JFrame {
 
 
     private static final long serialVersionUID = 1L;
+    private MenuItem exit;
 
+
+    public UI() {
+        try {
+            UIManager.setLookAndFeel("com.jtattoo.plaf.hifi.HiFiLookAndFeel");
+        } catch (ClassNotFoundException ex) {
+            java.util.logging.Logger.getLogger(UI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (InstantiationException ex) {
+            java.util.logging.Logger.getLogger(UI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (IllegalAccessException ex) {
+            java.util.logging.Logger.getLogger(UI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
+            java.util.logging.Logger.getLogger(UI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        }
+        initComponents();
+        hideErrors();
+        UIList.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                if (e.getClickCount() > 1) {
+                    int index = UIList.getSelectedIndex();
+                    String desc = (String) UIList.getModel().getElementAt(index);
+                    ListRenderer.addViewedFlash(desc);
+                    URL url = PortalWatch.getMainList().get(desc);
+                    PortalWatch.openURL(url);
+                }
+            }
+
+        });
+
+    }
+
+    public void setupSysTray() {
+        if (!SystemTray.isSupported()) {
+            Log.severe("System tray returned 'unsupported'!  Please report this along with your operating system.");
+            return;
+        }
+        final PopupMenu popup = new PopupMenu();
+        Image image = Toolkit.getDefaultToolkit().getImage(getClass().getResource("../img/icon.png"));
+        final TrayIcon trayIcon = new TrayIcon(image);
+        final SystemTray tray = SystemTray.getSystemTray();
+
+        ActionListener listener = getMenuListener();
+        MouseListener listener2 = getTrayListener();
+
+        trayIcon.addMouseListener(listener2);
+
+        exit = new MenuItem("Exit");
+        exit.addActionListener(listener);
+        popup.add(exit);
+
+        trayIcon.setPopupMenu(popup);
+
+        try {
+            tray.add(trayIcon);
+        } catch (Exception e) {
+            Log.severe("The system tray could not be initialized.");
+        }
+    }
+
+    private ActionListener getMenuListener() {
+        ActionListener listener = new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (e.getSource() == exit) {
+                    System.exit(0);
+                }
+            }
+        };
+        return listener;
+    }
+
+    private MouseAdapter getTrayListener() {
+        MouseAdapter listener2 = new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                if (e.getClickCount() >= 2) {
+                    showFrame();
+                }
+            }
+        };
+        return listener2;
+    }
+
+    private void showFrame() {
+        this.setVisible(true);
+    }
 
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
@@ -32,6 +119,15 @@ public class UI extends javax.swing.JFrame {
         refreshButton = new javax.swing.JButton();
         jPanel1 = new javax.swing.JPanel();
         jLabel3 = new javax.swing.JLabel();
+        jLabel5 = new javax.swing.JLabel();
+        statLevel = new javax.swing.JLabel();
+        jLabel6 = new javax.swing.JLabel();
+        statExperience = new javax.swing.JLabel();
+        jLabel7 = new javax.swing.JLabel();
+        statExpRank = new javax.swing.JLabel();
+        jLabel10 = new javax.swing.JLabel();
+        statVP = new javax.swing.JLabel();
+        statClass = new javax.swing.JLabel();
         jLabel4 = new javax.swing.JLabel();
         jPanel3 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
@@ -40,7 +136,6 @@ public class UI extends javax.swing.JFrame {
         jLabel2 = new javax.swing.JLabel();
         userNameField = new javax.swing.JTextField();
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Portal Watch - Version " + PortalWatch.getVersion());
         setBackground(new java.awt.Color(0, 0, 0));
         setLocationByPlatform(true);
@@ -63,6 +158,7 @@ public class UI extends javax.swing.JFrame {
 
         UIList.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
         UIList.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
+        UIList.setCellRenderer(new ListRenderer());
         UIList.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
         UIList.setDoubleBuffered(true);
         jScrollPane2.setViewportView(UIList);
@@ -117,8 +213,58 @@ public class UI extends javax.swing.JFrame {
         jPanel1.add(jLabel3);
         jLabel3.setBounds(0, 0, 620, 40);
 
+        jLabel5.setForeground(new java.awt.Color(204, 204, 204));
+        jLabel5.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+        jLabel5.setText("Level:");
+        jPanel1.add(jLabel5);
+        jLabel5.setBounds(32, 50, 110, 15);
+
+        statLevel.setForeground(new java.awt.Color(255, 255, 255));
+        statLevel.setText("N/A");
+        jPanel1.add(statLevel);
+        statLevel.setBounds(160, 50, 60, 15);
+
+        jLabel6.setForeground(new java.awt.Color(204, 204, 204));
+        jLabel6.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+        jLabel6.setText("Experience:");
+        jPanel1.add(jLabel6);
+        jLabel6.setBounds(30, 70, 110, 15);
+
+        statExperience.setForeground(new java.awt.Color(255, 255, 255));
+        statExperience.setText("N/A");
+        jPanel1.add(statExperience);
+        statExperience.setBounds(160, 70, 140, 15);
+
+        jLabel7.setForeground(new java.awt.Color(204, 204, 204));
+        jLabel7.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+        jLabel7.setText("Exp Rank:");
+        jPanel1.add(jLabel7);
+        jLabel7.setBounds(30, 90, 110, 15);
+
+        statExpRank.setForeground(new java.awt.Color(255, 255, 255));
+        statExpRank.setText("N/A");
+        jPanel1.add(statExpRank);
+        statExpRank.setBounds(160, 90, 130, 15);
+
+        jLabel10.setForeground(new java.awt.Color(204, 204, 204));
+        jLabel10.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+        jLabel10.setText("Voting Power:");
+        jPanel1.add(jLabel10);
+        jLabel10.setBounds(30, 110, 110, 15);
+
+        statVP.setForeground(new java.awt.Color(255, 255, 255));
+        statVP.setText("N/A");
+        jPanel1.add(statVP);
+        statVP.setBounds(160, 110, 120, 15);
+
+        statClass.setForeground(new java.awt.Color(255, 255, 255));
+        statClass.setText("N/A");
+        jPanel1.add(statClass);
+        statClass.setBounds(183, 50, 180, 15);
+
+        jLabel4.setForeground(new java.awt.Color(204, 204, 204));
         jLabel4.setIcon(new javax.swing.ImageIcon(getClass().getResource("/org/hopto/seed419/img/pod.jpg"))); // NOI18N
-        jLabel4.setText("jLabel4");
+        jLabel4.setText("Exp rank:");
         jPanel1.add(jLabel4);
         jLabel4.setBounds(-10, 40, 630, 140);
 
@@ -236,38 +382,15 @@ public class UI extends javax.swing.JFrame {
             String url = "http://" + userNameField.getText() + ".newgrounds.com/stats";
             List<CharSequence> html = HTMLParser.getHTML(url, "dl.communitystats");
             List<String> stats = HTMLParser.applyStatRegex(html);
+            statClass.setText(stats.get(0));
+            statLevel.setText(stats.get(1));
+            System.out.println("Experience: " + stats.get(2));
+            statExperience.setText(stats.get(3));
+            statExpRank.setText(stats.get(5));
+            statVP.setText(stats.get(7));
         }
 
     }//GEN-LAST:event_userNameFieldFocusLost
-
-    public UI() {
-        try {
-            UIManager.setLookAndFeel("com.jtattoo.plaf.hifi.HiFiLookAndFeel");
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(UI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(UI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(UI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(UI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        }
-        initComponents();
-        hideErrors();
-        UIList.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                if (e.getClickCount() > 1) {
-                    int index = UIList.getSelectedIndex();
-                    String desc = (String) UIList.getModel().getElementAt(index);
-                    URL url = PortalWatch.getMainList().get(desc);
-                    PortalWatch.openURL(url);
-                }
-            }
-
-        });
-
-    }
 
     /*Fills UI List on first run, and adds the click listener*/
     public void fillUIList(List<String> descriptions) {
@@ -292,9 +415,13 @@ public class UI extends javax.swing.JFrame {
     private javax.swing.JList UIList;
     private javax.swing.JLabel errorRefresh;
     private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
+    private javax.swing.JLabel jLabel5;
+    private javax.swing.JLabel jLabel6;
+    private javax.swing.JLabel jLabel7;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
@@ -302,7 +429,13 @@ public class UI extends javax.swing.JFrame {
     private javax.swing.JTabbedPane jTabbedPane1;
     private javax.swing.JButton refreshButton;
     private static javax.swing.JTextField refreshTimeField;
+    private javax.swing.JLabel statClass;
+    private javax.swing.JLabel statExpRank;
+    private javax.swing.JLabel statExperience;
+    private javax.swing.JLabel statLevel;
+    private javax.swing.JLabel statVP;
     private javax.swing.JLabel underJudgement;
     private javax.swing.JTextField userNameField;
     // End of variables declaration//GEN-END:variables
+
 }

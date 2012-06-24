@@ -92,12 +92,14 @@ public class HTMLParser {
         List<String> stats = new ArrayList<String>();
         Pattern pat = Pattern.compile(Regex.getStats);
         for (CharSequence x : data) {
-            System.out.println(x.toString());
+            //System.out.println(x.toString());
             Matcher mat = pat.matcher(x);
             while(mat.find()) {
                 String[] split = mat.group().split(">");
                 System.out.println(split[1]);
-                stats.add(split[1]);
+                if (split[1] != null && !split[1].isEmpty() && !split[1].contains(">") && !split[1].contains("<")) {
+                    stats.add(split[1].trim());
+                }
             }
         }
         return stats;

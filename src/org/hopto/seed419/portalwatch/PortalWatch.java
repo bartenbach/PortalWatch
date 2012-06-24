@@ -29,6 +29,7 @@ public class PortalWatch {
 
     public static void main(String[] args) {
         final Log log = new Log();
+        u.setupSysTray();
         u.setVisible(true);
         u.setIconImage(new ImageIcon(u.getClass().getResource("../img/icon.png")).getImage());
 

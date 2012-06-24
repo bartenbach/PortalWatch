@@ -12,7 +12,7 @@ public class Regex {
 
     public static String getURLs = "\\/\\w+\\/\\w+\\/\\d*";
     //public static String getStats = "<dd>\\s+.+";
-    public static String getStats= "<dd>\\s+([^<a][a-zA-Z,0-9\\s/]+)";
+    public static String getStats= "<dd>\\s+([^<a][a-zA-Z,0-9\\s/.]+)";
 
 
 }
