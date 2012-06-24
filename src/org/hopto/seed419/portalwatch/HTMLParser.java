@@ -37,7 +37,7 @@ public class HTMLParser {
             }
             return charSeq;
         } catch (MalformedURLException mal) {
-            Log.warning("Invalid URL parsed", mal);
+            Log.warning("Invalid URL", mal);
         } catch (IOException ex) {
             Log.warning("IOException thrown", ex);
         }
@@ -75,7 +75,7 @@ public class HTMLParser {
         return descriptions;
     }
 
-    /*Because of the confusing nature of the Regexes, this method links the URL to the description*/
+    /*Link the the URLs to their descriptions*/
     public static Map<String,URL> linkLists(List<URL> urls, List<String> descriptions) {
         Map<String,URL> mainList = new HashMap<String,URL>();
         for (int i = 0; i < urls.size(); i++) {
@@ -86,8 +86,7 @@ public class HTMLParser {
         return mainList;
     }
 
-
-    /*Applies stat regexes*/
+    /*Gets stats from Newgrounds HTML*/
     public static List<String> applyStatRegex(List<CharSequence> data) {
         List<String> stats = new ArrayList<String>();
         Pattern pat = Pattern.compile(Regex.getStats);

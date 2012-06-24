@@ -32,7 +32,6 @@ public class ListRenderer extends DefaultListCellRenderer {
         } else {
             setForeground(Color.WHITE);
         }
-
         return this;
     }
 

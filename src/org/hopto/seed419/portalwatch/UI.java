@@ -48,7 +48,6 @@ public class UI extends javax.swing.JFrame {
             }
 
         });
-
     }
 
 
@@ -71,7 +70,6 @@ public class UI extends javax.swing.JFrame {
         exit = new MenuItem("Exit");
         exit.addActionListener(listener);
         popup.add(exit);
-        popup.setLabel("PortalWatch");
 
         trayIcon.setPopupMenu(popup);
 

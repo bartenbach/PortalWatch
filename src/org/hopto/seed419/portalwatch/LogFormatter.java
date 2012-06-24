@@ -31,7 +31,6 @@ public class LogFormatter extends Formatter{
             builder.append(record.getLevel().getLocalizedName().toUpperCase());
         }
         builder.append("] ");
-        //builder.append(" {" + record. + "} ");
         builder.append(record.getMessage());
         builder.append('\n');
 

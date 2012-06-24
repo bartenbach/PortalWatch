@@ -19,6 +19,7 @@ import javax.swing.ImageIcon;
  */
 public class PortalWatch {
 
+
     private static final double version = 0.1;
     private static Map<String,URL> mainList;
     private static final int DESKTOP_UNSUPPORTED = 54;
@@ -28,6 +29,7 @@ public class PortalWatch {
 
 
     public static void main(String[] args) {
+        /*Init logger, system tray, icon, and set visible*/
         final Log log = new Log();
         u.setupSysTray();
         u.hideStuff();
