@@ -96,7 +96,7 @@ public class HTMLParser {
             Matcher mat = pat.matcher(x);
             while(mat.find()) {
                 String[] split = mat.group().split(">");
-                System.out.println(split[1]);
+                //System.out.println(split[1]);
                 if (split[1] != null && !split[1].isEmpty() && !split[1].contains(">") && !split[1].contains("<")) {
                     stats.add(split[1].trim());
                 }

@@ -19,6 +19,7 @@ public class UI extends javax.swing.JFrame {
 
     private static final long serialVersionUID = 1L;
     private MenuItem exit;
+    private boolean statsVisibleFlag = false;
 
 
     public UI() {
@@ -34,7 +35,6 @@ public class UI extends javax.swing.JFrame {
             java.util.logging.Logger.getLogger(UI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
         initComponents();
-        hideErrors();
         UIList.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
@@ -51,6 +51,8 @@ public class UI extends javax.swing.JFrame {
 
     }
 
+
+    /*System Tray*/
     public void setupSysTray() {
         if (!SystemTray.isSupported()) {
             Log.severe("System tray returned 'unsupported'!  Please report this along with your operating system.");
@@ -69,6 +71,7 @@ public class UI extends javax.swing.JFrame {
         exit = new MenuItem("Exit");
         exit.addActionListener(listener);
         popup.add(exit);
+        popup.setLabel("PortalWatch");
 
         trayIcon.setPopupMenu(popup);
 
@@ -118,17 +121,31 @@ public class UI extends javax.swing.JFrame {
         underJudgement = new javax.swing.JLabel();
         refreshButton = new javax.swing.JButton();
         jPanel1 = new javax.swing.JPanel();
-        jLabel3 = new javax.swing.JLabel();
-        jLabel5 = new javax.swing.JLabel();
+        refreshButton1 = new javax.swing.JButton();
+        header = new javax.swing.JLabel();
+        labelLevel = new javax.swing.JLabel();
         statLevel = new javax.swing.JLabel();
-        jLabel6 = new javax.swing.JLabel();
+        labelExperience = new javax.swing.JLabel();
         statExperience = new javax.swing.JLabel();
-        jLabel7 = new javax.swing.JLabel();
+        labelWhistle = new javax.swing.JLabel();
+        labelExpRank = new javax.swing.JLabel();
         statExpRank = new javax.swing.JLabel();
-        jLabel10 = new javax.swing.JLabel();
+        labelVP = new javax.swing.JLabel();
         statVP = new javax.swing.JLabel();
+        statWhistle = new javax.swing.JLabel();
         statClass = new javax.swing.JLabel();
-        jLabel4 = new javax.swing.JLabel();
+        errorNoName = new javax.swing.JLabel();
+        labelRank = new javax.swing.JLabel();
+        labelPosts = new javax.swing.JLabel();
+        labelGlobalRank = new javax.swing.JLabel();
+        labelBlams = new javax.swing.JLabel();
+        labelSaves = new javax.swing.JLabel();
+        statRank = new javax.swing.JLabel();
+        statGlobalRank = new javax.swing.JLabel();
+        statBlams = new javax.swing.JLabel();
+        statSaves = new javax.swing.JLabel();
+        statPosts = new javax.swing.JLabel();
+        podPanel = new javax.swing.JLabel();
         jPanel3 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
         refreshTimeField = new javax.swing.JTextField();
@@ -209,64 +226,151 @@ public class UI extends javax.swing.JFrame {
         jPanel1.setFocusable(false);
         jPanel1.setLayout(null);
 
-        jLabel3.setIcon(new javax.swing.ImageIcon(getClass().getResource("/org/hopto/seed419/img/web.png"))); // NOI18N
-        jPanel1.add(jLabel3);
-        jLabel3.setBounds(0, 0, 620, 40);
+        refreshButton1.setFont(new java.awt.Font("Dialog", 1, 10)); // NOI18N
+        refreshButton1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/org/hopto/seed419/img/refreshreallysmall.png"))); // NOI18N
+        refreshButton1.setMnemonic('r');
+        refreshButton1.setText("Refresh");
+        refreshButton1.setFocusable(false);
+        refreshButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                refreshButton1ActionPerformed(evt);
+            }
+        });
+        jPanel1.add(refreshButton1);
+        refreshButton1.setBounds(484, 6, 77, 24);
 
-        jLabel5.setForeground(new java.awt.Color(204, 204, 204));
-        jLabel5.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
-        jLabel5.setText("Level:");
-        jPanel1.add(jLabel5);
-        jLabel5.setBounds(32, 50, 110, 15);
+        header.setIcon(new javax.swing.ImageIcon(getClass().getResource("/org/hopto/seed419/img/web.png"))); // NOI18N
+        jPanel1.add(header);
+        header.setBounds(0, 0, 620, 40);
+
+        labelLevel.setForeground(new java.awt.Color(255, 153, 0));
+        labelLevel.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+        labelLevel.setText("Level:");
+        jPanel1.add(labelLevel);
+        labelLevel.setBounds(20, 50, 110, 15);
 
         statLevel.setForeground(new java.awt.Color(255, 255, 255));
         statLevel.setText("N/A");
         jPanel1.add(statLevel);
-        statLevel.setBounds(160, 50, 60, 15);
+        statLevel.setBounds(150, 50, 60, 15);
 
-        jLabel6.setForeground(new java.awt.Color(204, 204, 204));
-        jLabel6.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
-        jLabel6.setText("Experience:");
-        jPanel1.add(jLabel6);
-        jLabel6.setBounds(30, 70, 110, 15);
+        labelExperience.setForeground(new java.awt.Color(255, 153, 0));
+        labelExperience.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+        labelExperience.setText("Experience:");
+        jPanel1.add(labelExperience);
+        labelExperience.setBounds(20, 70, 110, 15);
 
         statExperience.setForeground(new java.awt.Color(255, 255, 255));
         statExperience.setText("N/A");
         jPanel1.add(statExperience);
-        statExperience.setBounds(160, 70, 140, 15);
+        statExperience.setBounds(150, 70, 140, 15);
 
-        jLabel7.setForeground(new java.awt.Color(204, 204, 204));
-        jLabel7.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
-        jLabel7.setText("Exp Rank:");
-        jPanel1.add(jLabel7);
-        jLabel7.setBounds(30, 90, 110, 15);
+        labelWhistle.setForeground(new java.awt.Color(255, 153, 0));
+        labelWhistle.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+        labelWhistle.setText("Whistle:");
+        labelWhistle.setFocusable(false);
+        jPanel1.add(labelWhistle);
+        labelWhistle.setBounds(20, 130, 110, 15);
+
+        labelExpRank.setForeground(new java.awt.Color(255, 153, 0));
+        labelExpRank.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+        labelExpRank.setText("Exp Rank:");
+        jPanel1.add(labelExpRank);
+        labelExpRank.setBounds(20, 90, 110, 15);
 
         statExpRank.setForeground(new java.awt.Color(255, 255, 255));
         statExpRank.setText("N/A");
         jPanel1.add(statExpRank);
-        statExpRank.setBounds(160, 90, 130, 15);
+        statExpRank.setBounds(150, 90, 130, 15);
 
-        jLabel10.setForeground(new java.awt.Color(204, 204, 204));
-        jLabel10.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
-        jLabel10.setText("Voting Power:");
-        jPanel1.add(jLabel10);
-        jLabel10.setBounds(30, 110, 110, 15);
+        labelVP.setForeground(new java.awt.Color(255, 153, 0));
+        labelVP.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+        labelVP.setText("Voting Power:");
+        jPanel1.add(labelVP);
+        labelVP.setBounds(20, 110, 110, 15);
 
         statVP.setForeground(new java.awt.Color(255, 255, 255));
         statVP.setText("N/A");
         jPanel1.add(statVP);
-        statVP.setBounds(160, 110, 120, 15);
+        statVP.setBounds(150, 110, 120, 15);
 
-        statClass.setForeground(new java.awt.Color(255, 255, 255));
+        statWhistle.setForeground(new java.awt.Color(255, 255, 255));
+        statWhistle.setText("N/A");
+        jPanel1.add(statWhistle);
+        statWhistle.setBounds(150, 130, 100, 15);
+
+        statClass.setFont(new java.awt.Font("Dialog", 0, 10)); // NOI18N
+        statClass.setForeground(new java.awt.Color(153, 153, 153));
         statClass.setText("N/A");
         jPanel1.add(statClass);
-        statClass.setBounds(183, 50, 180, 15);
+        statClass.setBounds(173, 52, 130, 13);
 
-        jLabel4.setForeground(new java.awt.Color(204, 204, 204));
-        jLabel4.setIcon(new javax.swing.ImageIcon(getClass().getResource("/org/hopto/seed419/img/pod.jpg"))); // NOI18N
-        jLabel4.setText("Exp rank:");
-        jPanel1.add(jLabel4);
-        jLabel4.setBounds(-10, 40, 630, 140);
+        errorNoName.setForeground(new java.awt.Color(153, 153, 153));
+        errorNoName.setText("Enter a username in the Configure tab for stats");
+        jPanel1.add(errorNoName);
+        errorNoName.setBounds(130, 90, 390, 15);
+
+        labelRank.setForeground(new java.awt.Color(255, 153, 0));
+        labelRank.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+        labelRank.setText("Rank:");
+        jPanel1.add(labelRank);
+        labelRank.setBounds(260, 50, 110, 15);
+
+        labelPosts.setForeground(new java.awt.Color(255, 153, 0));
+        labelPosts.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+        labelPosts.setText("Posts:");
+        labelPosts.setFocusable(false);
+        jPanel1.add(labelPosts);
+        labelPosts.setBounds(260, 130, 110, 15);
+
+        labelGlobalRank.setForeground(new java.awt.Color(255, 153, 0));
+        labelGlobalRank.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+        labelGlobalRank.setText("Global Rank:");
+        jPanel1.add(labelGlobalRank);
+        labelGlobalRank.setBounds(260, 70, 110, 15);
+
+        labelBlams.setForeground(new java.awt.Color(255, 153, 0));
+        labelBlams.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+        labelBlams.setText("Blams:");
+        jPanel1.add(labelBlams);
+        labelBlams.setBounds(260, 90, 110, 15);
+
+        labelSaves.setForeground(new java.awt.Color(255, 153, 0));
+        labelSaves.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+        labelSaves.setText("Saves:");
+        jPanel1.add(labelSaves);
+        labelSaves.setBounds(260, 110, 110, 15);
+
+        statRank.setForeground(new java.awt.Color(255, 255, 255));
+        statRank.setText("N/A");
+        jPanel1.add(statRank);
+        statRank.setBounds(380, 50, 150, 15);
+
+        statGlobalRank.setForeground(new java.awt.Color(255, 255, 255));
+        statGlobalRank.setText("N/A");
+        jPanel1.add(statGlobalRank);
+        statGlobalRank.setBounds(380, 70, 140, 15);
+
+        statBlams.setForeground(new java.awt.Color(255, 255, 255));
+        statBlams.setText("N/A");
+        jPanel1.add(statBlams);
+        statBlams.setBounds(380, 90, 130, 15);
+
+        statSaves.setForeground(new java.awt.Color(255, 255, 255));
+        statSaves.setText("N/A");
+        jPanel1.add(statSaves);
+        statSaves.setBounds(380, 110, 140, 15);
+
+        statPosts.setForeground(new java.awt.Color(255, 255, 255));
+        statPosts.setText("N/A");
+        jPanel1.add(statPosts);
+        statPosts.setBounds(380, 130, 130, 15);
+
+        podPanel.setForeground(new java.awt.Color(204, 204, 204));
+        podPanel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/org/hopto/seed419/img/pod.jpg"))); // NOI18N
+        podPanel.setText("Exp rank:");
+        jPanel1.add(podPanel);
+        podPanel.setBounds(-10, 40, 630, 140);
 
         jTabbedPane1.addTab("Stats", jPanel1);
 
@@ -384,13 +488,25 @@ public class UI extends javax.swing.JFrame {
             List<String> stats = HTMLParser.applyStatRegex(html);
             statClass.setText(stats.get(0));
             statLevel.setText(stats.get(1));
-            System.out.println("Experience: " + stats.get(2));
             statExperience.setText(stats.get(3));
             statExpRank.setText(stats.get(5));
             statVP.setText(stats.get(7));
+            statWhistle.setText(stats.get(9));
+            statRank.setText(stats.get(11));
+            statGlobalRank.setText(stats.get(13));
+            statBlams.setText(stats.get(15));
+            statSaves.setText(stats.get(17));
+            statPosts.setText(stats.get(19));
+            if (!statsVisibleFlag) {
+                showStats();
+            }
         }
 
     }//GEN-LAST:event_userNameFieldFocusLost
+
+    private void refreshButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_refreshButton1ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_refreshButton1ActionPerformed
 
     /*Fills UI List on first run, and adds the click listener*/
     public void fillUIList(List<String> descriptions) {
@@ -407,33 +523,96 @@ public class UI extends javax.swing.JFrame {
         underJudgement.setText("Under Judgement: " + flashes);
     }
 
-    public void hideErrors() {
+
+    /*Show/Hide labels and errors*/
+    public void hideStuff() {
+        errorNoName.setVisible(true);
         errorRefresh.setVisible(false);
+        statClass.setVisible(false);
+        statLevel.setVisible(false);
+        statExperience.setVisible(false);
+        statExpRank.setVisible(false);
+        statVP.setVisible(false);
+        statWhistle.setVisible(false);
+        statRank.setVisible(false);
+        statBlams.setVisible(false);
+        statSaves.setVisible(false);
+        statGlobalRank.setVisible(false);
+        statPosts.setVisible(false);
+        labelExpRank.setVisible(false);
+        labelExperience.setVisible(false);
+        labelLevel.setVisible(false);
+        labelVP.setVisible(false);
+        labelWhistle.setVisible(false);
+        labelGlobalRank.setVisible(false);
+        labelRank.setVisible(false);
+        labelSaves.setVisible(false);
+        labelBlams.setVisible(false);
+        labelPosts.setVisible(false);
+    }
+
+    public void showStats() {
+        errorNoName.setVisible(false);
+        statClass.setVisible(true);
+        statLevel.setVisible(true);
+        statExperience.setVisible(true);
+        statExpRank.setVisible(true);
+        statVP.setVisible(true);
+        statWhistle.setVisible(true);
+        statRank.setVisible(true);
+        statBlams.setVisible(true);
+        statSaves.setVisible(true);
+        statGlobalRank.setVisible(true);
+        statPosts.setVisible(true);
+        labelExpRank.setVisible(true);
+        labelExperience.setVisible(true);
+        labelLevel.setVisible(true);
+        labelVP.setVisible(true);
+        labelWhistle.setVisible(true);
+        labelGlobalRank.setVisible(true);
+        labelRank.setVisible(true);
+        labelSaves.setVisible(true);
+        labelBlams.setVisible(true);
+        labelPosts.setVisible(true);
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JList UIList;
+    private javax.swing.JLabel errorNoName;
     private javax.swing.JLabel errorRefresh;
+    private javax.swing.JLabel header;
     private javax.swing.JLabel jLabel1;
-    private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel2;
-    private javax.swing.JLabel jLabel3;
-    private javax.swing.JLabel jLabel4;
-    private javax.swing.JLabel jLabel5;
-    private javax.swing.JLabel jLabel6;
-    private javax.swing.JLabel jLabel7;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JTabbedPane jTabbedPane1;
+    private javax.swing.JLabel labelBlams;
+    private javax.swing.JLabel labelExpRank;
+    private javax.swing.JLabel labelExperience;
+    private javax.swing.JLabel labelGlobalRank;
+    private javax.swing.JLabel labelLevel;
+    private javax.swing.JLabel labelPosts;
+    private javax.swing.JLabel labelRank;
+    private javax.swing.JLabel labelSaves;
+    private javax.swing.JLabel labelVP;
+    private javax.swing.JLabel labelWhistle;
+    private javax.swing.JLabel podPanel;
     private javax.swing.JButton refreshButton;
+    private javax.swing.JButton refreshButton1;
     private static javax.swing.JTextField refreshTimeField;
+    private javax.swing.JLabel statBlams;
     private javax.swing.JLabel statClass;
     private javax.swing.JLabel statExpRank;
     private javax.swing.JLabel statExperience;
+    private javax.swing.JLabel statGlobalRank;
     private javax.swing.JLabel statLevel;
+    private javax.swing.JLabel statPosts;
+    private javax.swing.JLabel statRank;
+    private javax.swing.JLabel statSaves;
     private javax.swing.JLabel statVP;
+    private javax.swing.JLabel statWhistle;
     private javax.swing.JLabel underJudgement;
     private javax.swing.JTextField userNameField;
     // End of variables declaration//GEN-END:variables
