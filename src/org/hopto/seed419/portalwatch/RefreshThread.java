@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package org.hopto.seed419.portalwatch;
 
 /**
@@ -10,15 +6,25 @@ package org.hopto.seed419.portalwatch;
  */
 public class RefreshThread extends Thread {
 
+
+    private ListHandler lh;
+    private UI u;
+
+
+    public RefreshThread(ListHandler lh, UI u) {
+        this.lh = lh;
+        this.u = u;
+    }
+
     @Override
     public void run() {
 
         while(true) {
             try {
-                Thread.sleep(UI.getRefreshTime());
-                PortalWatch.refreshList();
+                Thread.sleep(u.getRefreshTime());
+                lh.refreshList();
             } catch (InterruptedException ex) {
-                ex.printStackTrace();
+                Log.warning("Refresh thread interrupted", ex);
             }
         }
     }

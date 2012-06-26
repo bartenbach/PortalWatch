@@ -1,14 +1,17 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package org.hopto.seed419.portalwatch;
 
-import javax.swing.*;
 import java.awt.*;
-import java.awt.event.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.net.URL;
 import java.util.List;
+import javax.swing.UIManager;
+import net.sf.jcarrierpigeon.WindowPosition;
+import net.sf.jtelegraph.Telegraph;
+import net.sf.jtelegraph.TelegraphQueue;
+import net.sf.jtelegraph.TelegraphType;
 
 /**
  *
@@ -20,11 +23,16 @@ public class UI extends javax.swing.JFrame {
     private static final long serialVersionUID = 1L;
     private MenuItem exit;
     private boolean statsVisibleFlag = false;
+    private ListHandler lh;
+    private TrayIcon trayIcon;
+    private final TelegraphQueue queue = new TelegraphQueue();
 
 
+    /*Sets look and feel to jTattoo's HiFi laf, and inits components*/
     public UI() {
         try {
             UIManager.setLookAndFeel("com.jtattoo.plaf.hifi.HiFiLookAndFeel");
+            //UIManager.setLookAndFeel("Nimbus");
         } catch (ClassNotFoundException ex) {
             java.util.logging.Logger.getLogger(UI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (InstantiationException ex) {
@@ -35,8 +43,18 @@ public class UI extends javax.swing.JFrame {
             java.util.logging.Logger.getLogger(UI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
         initComponents();
+    }
+
+    /*Starts list handling class, and other housekeeping*/
+    public void init() {
+        this.setupSysTray();
+        lh = new ListHandler(this);
+        lh.startRefreshThread();
+        lh.refreshList();
+        this.hideStuff();
+        this.setLocation(400, 400);
+        this.setVisible(true);
         this.setIconImage(this.getToolkit().getImage(getClass().getResource("/img/icon.png")));
-        //setIconImage(new ImageIcon("../img/icon.png").getImage());
         UIList.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
@@ -44,8 +62,8 @@ public class UI extends javax.swing.JFrame {
                     int index = UIList.getSelectedIndex();
                     String desc = (String) UIList.getModel().getElementAt(index);
                     ListRenderer.addViewedFlash(desc);
-                    URL url = PortalWatch.getMainList().get(desc);
-                    PortalWatch.openURL(url);
+                    URL url = lh.getMainList().get(desc);
+                    BrowserHandler.openURL(url);
                 }
             }
 
@@ -61,13 +79,11 @@ public class UI extends javax.swing.JFrame {
         }
         final PopupMenu popup = new PopupMenu();
         Image image = Toolkit.getDefaultToolkit().getImage(getClass().getClassLoader().getResource("img/icon.png"));
-        final TrayIcon trayIcon = new TrayIcon(image);
+        trayIcon = new TrayIcon(image);
         final SystemTray tray = SystemTray.getSystemTray();
 
         ActionListener listener = getMenuListener();
-        MouseListener listener2 = getTrayListener();
-
-        trayIcon.addMouseListener(listener2);
+        trayIcon.addMouseListener(getTrayListener());
 
         exit = new MenuItem("Exit");
         exit.addActionListener(listener);
@@ -78,7 +94,7 @@ public class UI extends javax.swing.JFrame {
         try {
             tray.add(trayIcon);
         } catch (Exception e) {
-            Log.severe("The system tray could not be initialized.");
+            Log.severe("The system tray could not be initialized.", e);
         }
     }
 
@@ -121,7 +137,7 @@ public class UI extends javax.swing.JFrame {
         underJudgement = new javax.swing.JLabel();
         refreshButton = new javax.swing.JButton();
         jPanel1 = new javax.swing.JPanel();
-        refreshButton1 = new javax.swing.JButton();
+        refreshStatsButton = new javax.swing.JButton();
         header = new javax.swing.JLabel();
         labelLevel = new javax.swing.JLabel();
         statLevel = new javax.swing.JLabel();
@@ -165,6 +181,7 @@ public class UI extends javax.swing.JFrame {
         jTabbedPane1.setFocusable(false);
 
         jPanel2.setFocusable(false);
+        jPanel2.setLayout(null);
 
         jScrollPane2.setBorder(null);
         jScrollPane2.setForeground(new java.awt.Color(0, 0, 0));
@@ -179,9 +196,14 @@ public class UI extends javax.swing.JFrame {
         UIList.setDoubleBuffered(true);
         jScrollPane2.setViewportView(UIList);
 
+        jPanel2.add(jScrollPane2);
+        jScrollPane2.setBounds(12, 38, 549, 115);
+
         underJudgement.setForeground(new java.awt.Color(255, 204, 0));
         underJudgement.setText("Under Judgement: 0");
         underJudgement.setFocusable(false);
+        jPanel2.add(underJudgement);
+        underJudgement.setBounds(12, 17, 161, 15);
 
         refreshButton.setFont(new java.awt.Font("Dialog", 1, 10)); // NOI18N
         refreshButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/refreshreallysmall.png"))); // NOI18N
@@ -193,50 +215,26 @@ public class UI extends javax.swing.JFrame {
                 refreshButtonActionPerformed(evt);
             }
         });
-
-        javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
-        jPanel2.setLayout(jPanel2Layout);
-        jPanel2Layout.setHorizontalGroup(
-            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addComponent(underJudgement, javax.swing.GroupLayout.PREFERRED_SIZE, 161, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(refreshButton))
-                    .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 549, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(13, Short.MAX_VALUE))
-        );
-        jPanel2Layout.setVerticalGroup(
-            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel2Layout.createSequentialGroup()
-                .addGap(6, 6, 6)
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(refreshButton)
-                    .addComponent(underJudgement))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 115, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(43, 43, 43))
-        );
+        jPanel2.add(refreshButton);
+        refreshButton.setBounds(463, 6, 98, 26);
 
         jTabbedPane1.addTab("Portal", jPanel2);
 
         jPanel1.setFocusable(false);
         jPanel1.setLayout(null);
 
-        refreshButton1.setFont(new java.awt.Font("Dialog", 1, 10)); // NOI18N
-        refreshButton1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/refreshreallysmall.png"))); // NOI18N
-        refreshButton1.setMnemonic('r');
-        refreshButton1.setText("Refresh");
-        refreshButton1.setFocusable(false);
-        refreshButton1.addActionListener(new java.awt.event.ActionListener() {
+        refreshStatsButton.setFont(new java.awt.Font("Dialog", 1, 10)); // NOI18N
+        refreshStatsButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/refreshreallysmall.png"))); // NOI18N
+        refreshStatsButton.setMnemonic('r');
+        refreshStatsButton.setText("Refresh");
+        refreshStatsButton.setFocusable(false);
+        refreshStatsButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                refreshButton1ActionPerformed(evt);
+                refreshStatsButtonActionPerformed(evt);
             }
         });
-        jPanel1.add(refreshButton1);
-        refreshButton1.setBounds(481, 6, 80, 24);
+        jPanel1.add(refreshStatsButton);
+        refreshStatsButton.setBounds(463, 6, 98, 26);
 
         header.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/web.png"))); // NOI18N
         jPanel1.add(header);
@@ -398,10 +396,11 @@ public class UI extends javax.swing.JFrame {
 
         errorRefresh.setFont(new java.awt.Font("Dialog", 1, 10)); // NOI18N
         errorRefresh.setForeground(new java.awt.Color(255, 51, 0));
+        errorRefresh.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         errorRefresh.setText("Refresh time must be an integer");
         errorRefresh.setFocusable(false);
         jPanel3.add(errorRefresh);
-        errorRefresh.setBounds(190, 150, 198, 13);
+        errorRefresh.setBounds(70, 150, 440, 13);
 
         jLabel2.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
         jLabel2.setText("Your Newgrounds Username:");
@@ -418,12 +417,18 @@ public class UI extends javax.swing.JFrame {
         jPanel3.add(userNameField);
         userNameField.setBounds(237, 14, 100, 19);
 
+        refreshTimeUnit.setFont(new java.awt.Font("Dialog", 1, 10)); // NOI18N
         refreshTimeUnit.setMaximumRowCount(2);
         refreshTimeUnit.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Seconds", "Minutes" }));
         refreshTimeUnit.setToolTipText("Unit of time for the refresh timer");
         refreshTimeUnit.setDoubleBuffered(true);
+        refreshTimeUnit.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                refreshTimeUnitItemStateChanged(evt);
+            }
+        });
         jPanel3.add(refreshTimeUnit);
-        refreshTimeUnit.setBounds(350, 40, 88, 20);
+        refreshTimeUnit.setBounds(350, 40, 75, 20);
 
         jTabbedPane1.addTab("Configure", jPanel3);
 
@@ -442,22 +447,26 @@ public class UI extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void refreshButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_refreshButtonActionPerformed
-        PortalWatch.refreshList();
+        lh.refreshList();
     }//GEN-LAST:event_refreshButtonActionPerformed
 
-    private void refreshTimeFieldFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_refreshTimeFieldFocusLost
+    private void validateRefreshTime() {
         if (!refreshTimeField.getText().isEmpty()) {
             try {
                 int time = Integer.parseInt(refreshTimeField.getText());
-                if (time >= 30) {
+                if ((time >= 30 && refreshTimeUnit.getSelectedIndex() == 0) || refreshTimeUnit.getSelectedIndex() == 1) {
                     errorRefresh.setVisible(false);
-                    return;
+                } else {
+                    showRefreshError("Refresh time should be at least 30 seconds");
                 }
-                showRefreshError("Refresh time should be at least 30");
             } catch (NumberFormatException ne) {
                 showRefreshError("Refresh time not a valid integer");
             }
         }
+    }
+
+    private void refreshTimeFieldFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_refreshTimeFieldFocusLost
+        validateRefreshTime();
     }//GEN-LAST:event_refreshTimeFieldFocusLost
 
     private void showRefreshError(String error) {
@@ -471,6 +480,10 @@ public class UI extends javax.swing.JFrame {
     }//GEN-LAST:event_jPanel3MouseClicked
 
     private void userNameFieldFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_userNameFieldFocusLost
+        getAndFillStats();
+    }//GEN-LAST:event_userNameFieldFocusLost
+
+    private void getAndFillStats() {
         if (!userNameField.getText().isEmpty()) {
             String url = "http://" + userNameField.getText() + ".newgrounds.com/stats";
             List<CharSequence> html = HTMLParser.getHTML(url, "dl.communitystats");
@@ -489,23 +502,52 @@ public class UI extends javax.swing.JFrame {
             if (!statsVisibleFlag) {
                 showStats();
             }
+        } else {
+            hideStuff();
         }
-
-    }//GEN-LAST:event_userNameFieldFocusLost
-
-    private void refreshButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_refreshButton1ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_refreshButton1ActionPerformed
-
-    /*Fills UI List on first run, and adds the click listener*/
-    public void fillUIList(List<String> descriptions) {
-        UIList.setListData(descriptions.toArray());
-        setUnderJudgement(descriptions.size());
-
     }
 
-    public static int getRefreshTime() {
-        return (Integer.parseInt(refreshTimeField.getText())*1000);
+    private void refreshStatsButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_refreshStatsButtonActionPerformed
+        getAndFillStats();
+    }//GEN-LAST:event_refreshStatsButtonActionPerformed
+
+    private void refreshTimeUnitItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_refreshTimeUnitItemStateChanged
+        validateRefreshTime();
+    }//GEN-LAST:event_refreshTimeUnitItemStateChanged
+
+    /*Fills UI List with provided List of String Objects*/
+    public void fillUIList(List<String> descriptions) {
+        checkForNewUJFlashes(descriptions);
+        UIList.setListData(descriptions.toArray());
+        setUnderJudgement(descriptions.size());
+    }
+
+    public void checkForNewUJFlashes(List<String> desc) {
+        int items = UIList.getModel().getSize();
+        int newItems = desc.size();
+        if (newItems > items) {
+            int newUJ = newItems - items;
+            showNotification(newUJ);
+//            trayIcon.displayMessage("PortalWatch", newUJ + " New Under Judgement Submissions", TrayIcon.MessageType.INFO);
+        }
+    }
+
+    public void showNotification(int flashes){
+        //Possible other workable notification schemes with HiFi LAF
+        //MAIL, MAIL_RECIEVE, NOTIFICATION_ADD, NOTIIFCATION_DONE (not great), star_full, star_empty, DOCUMENT
+        Telegraph tele = new Telegraph("PortalWatch", flashes + " new flashes in the portal", TelegraphType.MAIL, WindowPosition.TOPRIGHT, 4000);
+        queue.add(tele);
+    }
+
+    public int getRefreshTime() {
+        if (refreshTimeUnit.getSelectedIndex() == 0) {
+            return (Integer.parseInt(refreshTimeField.getText())*1000);
+        } else if (refreshTimeUnit.getSelectedIndex() == 1) {
+            return (Integer.parseInt(refreshTimeField.getText())*1000*60);
+        } else {
+            Log.warning("Refresh Time validation failure.");
+            return 30000;
+        }
     }
 
     public void setUnderJudgement(int flashes) {
@@ -589,7 +631,7 @@ public class UI extends javax.swing.JFrame {
     private javax.swing.JLabel labelWhistle;
     private javax.swing.JLabel podPanel;
     private javax.swing.JButton refreshButton;
-    private javax.swing.JButton refreshButton1;
+    private javax.swing.JButton refreshStatsButton;
     private static javax.swing.JTextField refreshTimeField;
     private javax.swing.JComboBox refreshTimeUnit;
     private javax.swing.JLabel statBlams;

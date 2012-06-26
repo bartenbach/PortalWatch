@@ -1,108 +1,54 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package org.hopto.seed419.portalwatch;
-
-import java.awt.Desktop;
-import java.io.IOException;
-import java.net.URISyntaxException;
-import java.net.URL;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
 
 /**
  *
  * @author seed419
+ *
+ *
+    PortalWatch
+
+    Attribute Only (Public) License
+        Version 0.a5, Feb 07, 2012
+
+    Copyright (C) Blake Bartenbach <seed419@gmail.com> (@SeeD419)
+
+    Anyone is allowed to copy and distribute verbatim or modified
+    copies of this license document and altering is allowed as long
+    as you attribute the author(s) of this license document / files.
+
+    ATTRIBUTE ONLY PUBLIC LICENSE
+    TERMS AND CONDITIONS FOR COPYING, DISTRIBUTION AND MODIFICATION
+
+    1. Attribute anyone attached to the license document.
+        * Do not remove pre-existing attributes.
+
+        Plausible attribution methods:
+            1. Through comment header / license text.
+            2. Referencing on a site, wiki, or about page.
+
+        Example of comment attribute:
+            @attribution _name_ <_email_> (_desc_of_attr_)
+
+    2. Do whatever you want as long as you don't invalidate 1.
+
+    @license AOL v.a5 <http://aol.nexua.org>
+
  */
+
 public class PortalWatch {
 
 
     private static final double version = 0.1;
-    private static Map<String,URL> mainList;
-    private static final int DESKTOP_UNSUPPORTED = 54;
-    private static final int CANNOT_OPEN_BROWSER = 72;
+    private static final Log log = new Log();
     private static final UI u = new UI();
-    private static final Thread thread = new RefreshThread();
 
 
     public static void main(String[] args) {
-        /*Init logger, system tray, icon, and set visible*/
-        final Log log = new Log();
-        u.setupSysTray();
-        u.hideStuff();
-        u.setLocation(400, 400);
-        u.setVisible(true);
-
-        /*Fill list on startup*/
-        refreshList();
-
-        /*Start polling thread*/
-        thread.start();
-    }
-
-    /*Returns the main hashmap of URLs to strings that sit in the UI's JList*/
-    public static Map<String,URL> getMainList() {
-        return Collections.unmodifiableMap(mainList);
-    }
-
-    /*Opens a URL.  This method is fired from the UI class - mouseClicked*/
-    public static void openURL(URL url) {
-        if (!Desktop.isDesktopSupported()) {
-            int workaround = unsupportedDesktopWorkaround(url);
-            if (workaround > 0) {
-                Log.severe("Couldn't get a browser to open, sorry.  Report this!");
-                System.exit(DESKTOP_UNSUPPORTED);
-            }
-            return;
-        }
-       Desktop desktop = Desktop.getDesktop();
-        if(!desktop.isSupported(Desktop.Action.BROWSE)) {
-            Log.severe("Can't open web browser with your OS, sorry :(");
-            System.exit(CANNOT_OPEN_BROWSER);
-        }
-        try {
-            desktop.browse(url.toURI());
-        } catch (URISyntaxException ex) {
-            Log.severe("Can't navigate to that URL, sorry :(",ex);
-        } catch (IOException ex) {
-            Log.severe("Can't navigate to that URL, sorry :(",ex);
-        }
-    }
-
-    /*Workaround for unsupported linux desktops*/
-    public static int unsupportedDesktopWorkaround(URL url) {
-        try {
-            Process chrom = Runtime.getRuntime().exec("/usr/bin/chromium " + url.toString());
-            int exit = chrom.waitFor();
-            if (exit == 0) {return 0;} else {
-                Process ff = Runtime.getRuntime().exec("/usr/bin/firefox " + url.toString());
-                int exit2 = ff.waitFor();
-                if (exit == 0) {return 0;}
-            }
-        } catch (IOException ex) {
-            Log.severe("Workaround failed :( Sorry");
-        } catch (InterruptedException ie) {
-            Log.warning("Interrupted.");
-        }
-        return CANNOT_OPEN_BROWSER;
-    }
-
-    /*Updates the list with the newest flashes from the portal*/
-    public static void refreshList() {
-        try {
-            List<CharSequence> data = HTMLParser.getHTML("http://www.newgrounds.com/portal/", "li[class$=judgement]");
-            List<URL> urls = HTMLParser.applyURLRegex(data);
-            List<String> descriptions = HTMLParser.applyDescriptionRegex(data);
-            mainList = HTMLParser.linkLists(urls, descriptions);
-            u.fillUIList(descriptions);
-        } catch (Exception ex) {
-            Log.severe("Couldn't get links sorry :(", ex);
-        }
+        u.init();
     }
 
     public static double getVersion() {
         return version;
     }
+
 }
