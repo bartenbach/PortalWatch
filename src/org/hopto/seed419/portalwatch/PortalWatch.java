@@ -11,7 +11,6 @@ import java.net.URL;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import javax.swing.ImageIcon;
 
 /**
  *
@@ -35,7 +34,6 @@ public class PortalWatch {
         u.hideStuff();
         u.setLocation(400, 400);
         u.setVisible(true);
-        u.setIconImage(new ImageIcon(u.getClass().getResource("../img/icon.png")).getImage());
 
         /*Fill list on startup*/
         refreshList();
@@ -99,8 +97,8 @@ public class PortalWatch {
             List<String> descriptions = HTMLParser.applyDescriptionRegex(data);
             mainList = HTMLParser.linkLists(urls, descriptions);
             u.fillUIList(descriptions);
-        } catch (NullPointerException npe) {
-            Log.severe("Couldn't get links sorry :(", npe);
+        } catch (Exception ex) {
+            Log.severe("Couldn't get links sorry :(", ex);
         }
     }
 

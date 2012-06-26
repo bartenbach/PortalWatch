@@ -4,11 +4,11 @@
  */
 package org.hopto.seed419.portalwatch;
 
+import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.net.URL;
 import java.util.List;
-import javax.swing.UIManager;
 
 /**
  *
@@ -35,6 +35,8 @@ public class UI extends javax.swing.JFrame {
             java.util.logging.Logger.getLogger(UI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
         initComponents();
+        this.setIconImage(this.getToolkit().getImage(getClass().getResource("/img/icon.png")));
+        //setIconImage(new ImageIcon("../img/icon.png").getImage());
         UIList.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
@@ -58,7 +60,7 @@ public class UI extends javax.swing.JFrame {
             return;
         }
         final PopupMenu popup = new PopupMenu();
-        Image image = Toolkit.getDefaultToolkit().getImage(getClass().getResource("../img/icon.png"));
+        Image image = Toolkit.getDefaultToolkit().getImage(getClass().getClassLoader().getResource("img/icon.png"));
         final TrayIcon trayIcon = new TrayIcon(image);
         final SystemTray tray = SystemTray.getSystemTray();
 
@@ -150,13 +152,12 @@ public class UI extends javax.swing.JFrame {
         errorRefresh = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
         userNameField = new javax.swing.JTextField();
+        refreshTimeUnit = new javax.swing.JComboBox();
 
         setTitle("Portal Watch - Version " + PortalWatch.getVersion());
         setBackground(new java.awt.Color(0, 0, 0));
         setLocationByPlatform(true);
-        setMaximumSize(new java.awt.Dimension(579, 214));
         setMinimumSize(new java.awt.Dimension(578, 213));
-        setPreferredSize(new java.awt.Dimension(578, 213));
         setResizable(false);
 
         jTabbedPane1.setToolTipText("");
@@ -183,7 +184,7 @@ public class UI extends javax.swing.JFrame {
         underJudgement.setFocusable(false);
 
         refreshButton.setFont(new java.awt.Font("Dialog", 1, 10)); // NOI18N
-        refreshButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/org/hopto/seed419/img/refreshreallysmall.png"))); // NOI18N
+        refreshButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/refreshreallysmall.png"))); // NOI18N
         refreshButton.setMnemonic('r');
         refreshButton.setText("Refresh");
         refreshButton.setFocusable(false);
@@ -225,7 +226,7 @@ public class UI extends javax.swing.JFrame {
         jPanel1.setLayout(null);
 
         refreshButton1.setFont(new java.awt.Font("Dialog", 1, 10)); // NOI18N
-        refreshButton1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/org/hopto/seed419/img/refreshreallysmall.png"))); // NOI18N
+        refreshButton1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/refreshreallysmall.png"))); // NOI18N
         refreshButton1.setMnemonic('r');
         refreshButton1.setText("Refresh");
         refreshButton1.setFocusable(false);
@@ -235,9 +236,9 @@ public class UI extends javax.swing.JFrame {
             }
         });
         jPanel1.add(refreshButton1);
-        refreshButton1.setBounds(484, 6, 77, 24);
+        refreshButton1.setBounds(481, 6, 80, 24);
 
-        header.setIcon(new javax.swing.ImageIcon(getClass().getResource("/org/hopto/seed419/img/web.png"))); // NOI18N
+        header.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/web.png"))); // NOI18N
         jPanel1.add(header);
         header.setBounds(0, 0, 620, 40);
 
@@ -365,7 +366,7 @@ public class UI extends javax.swing.JFrame {
         statPosts.setBounds(380, 130, 130, 15);
 
         podPanel.setForeground(new java.awt.Color(204, 204, 204));
-        podPanel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/org/hopto/seed419/img/pod.jpg"))); // NOI18N
+        podPanel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/pod.jpg"))); // NOI18N
         podPanel.setText("Exp rank:");
         jPanel1.add(podPanel);
         podPanel.setBounds(-10, 40, 630, 140);
@@ -377,9 +378,14 @@ public class UI extends javax.swing.JFrame {
                 jPanel3MouseClicked(evt);
             }
         });
+        jPanel3.setLayout(null);
 
-        jLabel1.setText("Auto-Refresh Time ( Seconds ) :");
+        jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+        jLabel1.setText("Auto-Refresh Timer:");
+        jPanel3.add(jLabel1);
+        jLabel1.setBounds(12, 40, 210, 15);
 
+        refreshTimeField.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
         refreshTimeField.setText("120");
         refreshTimeField.setToolTipText("Time between auto-refreshes of the portal list");
         refreshTimeField.addFocusListener(new java.awt.event.FocusAdapter() {
@@ -387,52 +393,37 @@ public class UI extends javax.swing.JFrame {
                 refreshTimeFieldFocusLost(evt);
             }
         });
+        jPanel3.add(refreshTimeField);
+        refreshTimeField.setBounds(237, 40, 100, 19);
 
         errorRefresh.setFont(new java.awt.Font("Dialog", 1, 10)); // NOI18N
         errorRefresh.setForeground(new java.awt.Color(255, 51, 0));
         errorRefresh.setText("Refresh time must be an integer");
         errorRefresh.setFocusable(false);
+        jPanel3.add(errorRefresh);
+        errorRefresh.setBounds(190, 150, 198, 13);
 
+        jLabel2.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
         jLabel2.setText("Your Newgrounds Username:");
+        jPanel3.add(jLabel2);
+        jLabel2.setBounds(12, 14, 210, 15);
 
+        userNameField.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
         userNameField.setToolTipText("Enter your NG Username here to get access to your stats");
         userNameField.addFocusListener(new java.awt.event.FocusAdapter() {
             public void focusLost(java.awt.event.FocusEvent evt) {
                 userNameFieldFocusLost(evt);
             }
         });
+        jPanel3.add(userNameField);
+        userNameField.setBounds(237, 14, 100, 19);
 
-        javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
-        jPanel3.setLayout(jPanel3Layout);
-        jPanel3Layout.setHorizontalGroup(
-            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel3Layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel1)
-                    .addComponent(jLabel2))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(refreshTimeField, javax.swing.GroupLayout.DEFAULT_SIZE, 100, Short.MAX_VALUE)
-                    .addComponent(userNameField))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(errorRefresh, javax.swing.GroupLayout.PREFERRED_SIZE, 198, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap())
-        );
-        jPanel3Layout.setVerticalGroup(
-            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel3Layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel2)
-                    .addComponent(userNameField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel1)
-                    .addComponent(refreshTimeField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(errorRefresh))
-                .addContainerGap(114, Short.MAX_VALUE))
-        );
+        refreshTimeUnit.setMaximumRowCount(2);
+        refreshTimeUnit.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Seconds", "Minutes" }));
+        refreshTimeUnit.setToolTipText("Unit of time for the refresh timer");
+        refreshTimeUnit.setDoubleBuffered(true);
+        jPanel3.add(refreshTimeUnit);
+        refreshTimeUnit.setBounds(350, 40, 88, 20);
 
         jTabbedPane1.addTab("Configure", jPanel3);
 
@@ -600,6 +591,7 @@ public class UI extends javax.swing.JFrame {
     private javax.swing.JButton refreshButton;
     private javax.swing.JButton refreshButton1;
     private static javax.swing.JTextField refreshTimeField;
+    private javax.swing.JComboBox refreshTimeUnit;
     private javax.swing.JLabel statBlams;
     private javax.swing.JLabel statClass;
     private javax.swing.JLabel statExpRank;
