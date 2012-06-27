@@ -1,5 +1,8 @@
 package org.hopto.seed419.portalwatch;
 
+import org.hopto.seed419.file.OSUtils;
+import org.hopto.seed419.file.SettingsFile;
+
 /**
  *
  * @author seed419
@@ -38,17 +41,17 @@ package org.hopto.seed419.portalwatch;
 public class PortalWatch {
 
 
-    private static final double version = 0.1;
+    public static final double version = 0.1;
     private static final Log log = new Log();
     private static final UI u = new UI();
+    private static final SettingsFile sf = new SettingsFile(u);
 
 
     public static void main(String[] args) {
+        System.out.println("Testing Environment...");
+        System.out.println("You're running " + OSUtils.getOsName());
+        System.out.println("Your home directory is " + OSUtils.getUserHome());
         u.init();
-    }
-
-    public static double getVersion() {
-        return version;
     }
 
 }

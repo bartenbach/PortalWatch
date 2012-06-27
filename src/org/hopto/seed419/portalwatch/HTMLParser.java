@@ -1,5 +1,9 @@
 package org.hopto.seed419.portalwatch;
 
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.select.Elements;
+
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -9,9 +13,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.jsoup.select.Elements;
 
 /**
  *
@@ -66,9 +67,16 @@ public class HTMLParser {
         for (CharSequence x : data) {
             String[] split = x.toString().split(">");
             String[] split2 = split[2].split("<");
-            descriptions.add(split2[0]);
+            String formatted = formatDescription(split2[0]);
+            descriptions.add(formatted);
         }
         return descriptions;
+    }
+
+    private static String formatDescription(String original) {
+        String formatted = original.replaceAll("&quot;", "\"");
+        formatted = formatted.replaceAll("&amp;", "&");
+        return formatted;
     }
 
     /*Link the the URLs to their descriptions*/

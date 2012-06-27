@@ -1,17 +1,20 @@
 package org.hopto.seed419.portalwatch;
 
+import net.sf.jcarrierpigeon.WindowPosition;
+import net.sf.jtelegraph.Telegraph;
+import net.sf.jtelegraph.TelegraphQueue;
+import net.sf.jtelegraph.TelegraphType;
+import org.hopto.seed419.file.SettingsFile;
+
+import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.List;
-import javax.swing.UIManager;
-import net.sf.jcarrierpigeon.WindowPosition;
-import net.sf.jtelegraph.Telegraph;
-import net.sf.jtelegraph.TelegraphQueue;
-import net.sf.jtelegraph.TelegraphType;
 
 /**
  *
@@ -103,6 +106,7 @@ public class UI extends javax.swing.JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (e.getSource() == exit) {
+                    SettingsFile.saveSettings(getFields());
                     System.exit(0);
                 }
             }
@@ -170,7 +174,7 @@ public class UI extends javax.swing.JFrame {
         userNameField = new javax.swing.JTextField();
         refreshTimeUnit = new javax.swing.JComboBox();
 
-        setTitle("Portal Watch - Version " + PortalWatch.getVersion());
+        setTitle("Portal Watch - Version " + PortalWatch.version);
         setBackground(new java.awt.Color(0, 0, 0));
         setLocationByPlatform(true);
         setMinimumSize(new java.awt.Dimension(578, 213));
@@ -606,6 +610,28 @@ public class UI extends javax.swing.JFrame {
         labelBlams.setVisible(true);
         labelPosts.setVisible(true);
     }
+
+    /*Settings file operations*/
+    public ArrayList<String> getFields() {
+        ArrayList<String> fields = new ArrayList<String>();
+        fields.add(userNameField.getText());
+        fields.add(refreshTimeField.getText());
+        fields.add(String.valueOf(refreshTimeUnit.getSelectedIndex()));
+        return fields;
+    }
+
+    public void setUserNameField(String username) {
+        userNameField.setText(username);
+    }
+
+    public void setRefreshTimeField(String refreshTime) {
+        refreshTimeField.setText(refreshTime);
+    }
+
+    public void setRefreshTimeUnits(int index) {
+        refreshTimeUnit.setSelectedIndex(index);
+    }
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JList UIList;
