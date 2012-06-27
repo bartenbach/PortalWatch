@@ -1,10 +1,10 @@
 package org.hopto.seed419.portalwatch;
 
+import net.sf.jcarrierpigeon.Notification;
 import net.sf.jcarrierpigeon.WindowPosition;
-import net.sf.jtelegraph.Telegraph;
-import net.sf.jtelegraph.TelegraphQueue;
-import net.sf.jtelegraph.TelegraphType;
 import org.hopto.seed419.file.SettingsFile;
+import org.hopto.seed419.jTelegraph.TelegraphEnvelope;
+import org.hopto.seed419.jTelegraph.TelegraphType;
 
 import javax.swing.*;
 import java.awt.*;
@@ -25,10 +25,10 @@ public class UI extends javax.swing.JFrame {
 
     private static final long serialVersionUID = 1L;
     private MenuItem exit;
+    private MenuItem viewLatest;
     private boolean statsVisibleFlag = false;
     private ListHandler lh;
     private TrayIcon trayIcon;
-    private final TelegraphQueue queue = new TelegraphQueue();
 
 
     /*Sets look and feel to jTattoo's HiFi laf, and inits components*/
@@ -51,9 +51,6 @@ public class UI extends javax.swing.JFrame {
     /*Starts list handling class, and other housekeeping*/
     public void init() {
         this.setupSysTray();
-        lh = new ListHandler(this);
-        lh.startRefreshThread();
-        lh.refreshList();
         this.hideStuff();
         this.setLocation(400, 400);
         this.setVisible(true);
@@ -71,6 +68,10 @@ public class UI extends javax.swing.JFrame {
             }
 
         });
+        lh = new ListHandler(this);
+        lh.startRefreshThread();
+        lh.refreshList();
+        getAndFillStats();
     }
 
 
@@ -85,12 +86,15 @@ public class UI extends javax.swing.JFrame {
         trayIcon = new TrayIcon(image);
         final SystemTray tray = SystemTray.getSystemTray();
 
-        ActionListener listener = getMenuListener();
         trayIcon.addMouseListener(getTrayListener());
 
         exit = new MenuItem("Exit");
-        exit.addActionListener(listener);
+        exit.addActionListener(getMenuListener());
         popup.add(exit);
+
+        viewLatest = new MenuItem("View Latest Submission");
+        viewLatest.addActionListener(getViewLatestListener());
+        popup.add(viewLatest);
 
         trayIcon.setPopupMenu(popup);
 
@@ -99,6 +103,17 @@ public class UI extends javax.swing.JFrame {
         } catch (Exception e) {
             Log.severe("The system tray could not be initialized.", e);
         }
+    }
+
+    /*ActionListeners*/
+    private ActionListener getViewLatestListener() {
+        ActionListener listener = new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                launchLatestSubmission();
+            }
+        };
+        return listener;
     }
 
     private ActionListener getMenuListener() {
@@ -521,26 +536,54 @@ public class UI extends javax.swing.JFrame {
 
     /*Fills UI List with provided List of String Objects*/
     public void fillUIList(List<String> descriptions) {
-        checkForNewUJFlashes(descriptions);
+        int oldListSize = UIList.getModel().getSize();
         UIList.setListData(descriptions.toArray());
+        int newListSize = UIList.getModel().getSize();
+        checkForNewUJFlashes(oldListSize, newListSize);
         setUnderJudgement(descriptions.size());
     }
 
-    public void checkForNewUJFlashes(List<String> desc) {
-        int items = UIList.getModel().getSize();
-        int newItems = desc.size();
-        if (newItems > items) {
-            int newUJ = newItems - items;
+    /*Checks for new submissions and shows a notification if they exist*/
+    public void checkForNewUJFlashes(int size1, int size2) {
+        if (size2 > size1) {
+            int newUJ = size2 - size1;
             showNotification(newUJ);
-//            trayIcon.displayMessage("PortalWatch", newUJ + " New Under Judgement Submissions", TrayIcon.MessageType.INFO);
         }
     }
 
+    /*Shows a notification using a highly hacked version of jTelegraph*/
     public void showNotification(int flashes){
-        //Possible other workable notification schemes with HiFi LAF
-        //MAIL, MAIL_RECIEVE, NOTIFICATION_ADD, NOTIIFCATION_DONE (not great), star_full, star_empty, DOCUMENT
-        Telegraph tele = new Telegraph("PortalWatch", flashes + " new flashes in the portal", TelegraphType.MAIL, WindowPosition.TOPRIGHT, 4000);
-        queue.add(tele);
+        final TelegraphEnvelope te = new TelegraphEnvelope();
+        te.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                if (e.getClickCount() >= 1) {
+                    launchLatestSubmission();
+                }
+            }
+
+            @Override
+            public void mouseEntered(MouseEvent e) {
+                te.setTelegraphColor(new Color(235, 174, 33));
+            }
+
+            @Override
+            public void mouseExited(MouseEvent e) {
+                te.setTelegraphColor(new Color(213, 159, 31));
+            }
+        });
+        if (flashes == 1) {
+            te.setMessage("PortalWatch", flashes + " new submission in the portal<br/> Latest: " + (String) UIList.getModel().getElementAt(0));
+        } else {
+            te.setMessage("PortalWatch", flashes + " new submissions in the portal<br/> Latest: " + (String) UIList.getModel().getElementAt(0));
+        }
+        te.setTelegraphType(TelegraphType.DOCUMENT_ADD);
+        te.packTelegraph();
+
+        // create a new notification from JCarrierPigeon
+        final Notification notification = new Notification(te, WindowPosition.BOTTOMRIGHT, 20, 20, 4000);
+        notification.setAnimationSpeed(250);
+        notification.animate();
     }
 
     public int getRefreshTime() {
@@ -556,6 +599,13 @@ public class UI extends javax.swing.JFrame {
 
     public void setUnderJudgement(int flashes) {
         underJudgement.setText("Under Judgement: " + flashes);
+    }
+
+    public void launchLatestSubmission() {
+        String desc = (String) UIList.getModel().getElementAt(0);
+        ListRenderer.addViewedFlash(desc);
+        URL url = lh.getMainList().get(desc);
+        BrowserHandler.openURL(url);
     }
 
 
